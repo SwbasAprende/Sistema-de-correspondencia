@@ -1,0 +1,65 @@
+{% extends 'radicacion/base.html' %}
+
+{% block title %}Nuevo Radicado - CER{% endblock %}
+
+{% block page_title %}Nuevo Radicado{% endblock %}
+
+{% block page_subtitle %}Registrar correspondencia recibida o enviada{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h4>📝 Nuevo Radicado</h4>
+    <a href="{% url 'lista' %}" class="btn btn-secondary">← Volver</a>
+</div>
+
+<div class="card p-4 bg-white">
+    <form method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div class="mb-3">
+            <label class="form-label">Tipo de correo</label>
+            <select name="direccion" class="form-select" required>
+                <option value="recibido">📥 Correo Recibido</option>
+                <option value="enviado">📤 Correo Enviado</option>
+            </select>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Número de Radicado</label>
+            <input type="text" class="form-control" placeholder="Se generará automáticamente" disabled>
+            <small class="text-muted">El sistema asignará el número al guardar.</small>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Remitente</label>
+            <input type="text" name="remitente" class="form-control" required>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Destinatario</label>
+            <input type="text" name="destinatario" class="form-control">
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Asunto</label>
+            <textarea name="asunto" class="form-control" rows="3" required></textarea>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Tipo de Correspondencia</label>
+            <select name="tipo" class="form-select" required>
+                {% for tipo in tipos %}
+                    <option value="{{ tipo.pk }}">{{ tipo.nombre }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Estado</label>
+            <select name="estado" class="form-select" required>
+                {% for estado in estados %}
+                    <option value="{{ estado.pk }}">{{ estado.nombre }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Adjuntar documento (PDF)</label>
+            <input type="file" name="documento" class="form-control" accept=".pdf">
+        </div>
+        <button type="submit" class="btn btn-success w-100">Guardar Radicado</button>
+    </form>
+</div>
+{% endblock %}

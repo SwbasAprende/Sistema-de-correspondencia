@@ -1,0 +1,260 @@
+{% extends 'radicacion/base.html' %}
+{% load static %}
+
+{% block title %}Ayuda - CER{% endblock %}
+{% block page_title %}Centro de Ayuda{% endblock %}
+{% block page_subtitle %}Guía de uso del Sistema de Gestión de Correspondencia{% endblock %}
+
+{% block content %}
+<style>
+    .ayuda-card {
+        background: white;
+        border-radius: 16px;
+        padding: 30px;
+        margin-bottom: 24px;
+        box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+        border-left: 5px solid #1a3a5c;
+        transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .ayuda-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 25px rgba(26,58,92,0.15);
+    }
+    .ayuda-card h5 {
+        color: #1a3a5c;
+        font-weight: 700;
+        margin-bottom: 15px;
+        font-size: 1.1rem;
+    }
+    .ayuda-card p { color: #555; font-size: 0.92rem; line-height: 1.7; }
+    .paso {
+        display: flex;
+        align-items: flex-start;
+        gap: 15px;
+        margin-bottom: 15px;
+    }
+    .paso-numero {
+        background: #1a3a5c;
+        color: white;
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        font-size: 0.85rem;
+        flex-shrink: 0;
+    }
+    .paso-texto { font-size: 0.9rem; color: #444; padding-top: 5px; line-height: 1.6; }
+    .icono-seccion {
+        width: 50px;
+        height: 50px;
+        border-radius: 12px;
+        background: #e8f0f8;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+        margin-bottom: 15px;
+    }
+    .rol-badge {
+        display: inline-block;
+        padding: 4px 12px;
+        border-radius: 20px;
+        font-size: 0.78rem;
+        font-weight: 600;
+        margin: 3px;
+    }
+    .rol-admin { background: #e8f0f8; color: #1a3a5c; }
+    .rol-operador { background: #e8f8ee; color: #198754; }
+    .rol-consultor { background: #fff3e0; color: #e65c00; }
+    .tip-box {
+        background: #e8f0f8;
+        border-radius: 10px;
+        padding: 15px 20px;
+        margin-top: 15px;
+        font-size: 0.88rem;
+        color: #1a3a5c;
+    }
+    .tip-box i { margin-right: 8px; }
+    .hero-ayuda {
+        background: linear-gradient(135deg, #1a3a5c 0%, #2d6a9f 100%);
+        border-radius: 16px;
+        padding: 35px 40px;
+        margin-bottom: 30px;
+        color: white;
+        display: flex;
+        align-items: center;
+        gap: 25px;
+    }
+    .hero-ayuda img { width: 80px; border-radius: 10px; }
+    .hero-ayuda h3 { margin: 0; font-weight: 700; font-size: 1.4rem; }
+    .hero-ayuda p { margin: 8px 0 0; opacity: 0.85; font-size: 0.92rem; }
+    .seccion-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 20px;
+        margin-bottom: 30px;
+    }
+</style>
+
+<!-- Hero -->
+<div class="hero-ayuda">
+    <img src="{% static 'radicacion/logo_cer.jpg' %}" alt="Logo CER">
+    <div>
+        <h3>¿Cómo podemos ayudarte?</h3>
+        <p>Esta guía explica paso a paso cómo usar el Sistema de Gestión de Correspondencia del Centro de Estudios Regionales.</p>
+    </div>
+</div>
+
+<!-- Tarjetas de acceso rápido -->
+<div class="seccion-grid">
+    <div class="ayuda-card" style="border-left-color: #0d6efd;">
+        <div class="icono-seccion" style="background:#e8f0ff;">
+            <i class="bi bi-box-arrow-in-right" style="color:#0d6efd;"></i>
+        </div>
+        <h5>1. Iniciar Sesión</h5>
+        <p>Para acceder al sistema ingresa tu usuario y contraseña en la pantalla de login. Si no tienes acceso, solicítalo al administrador.</p>
+        <div class="tip-box">
+            <i class="bi bi-shield-lock"></i> No compartas tu contraseña con nadie.
+        </div>
+    </div>
+
+    <div class="ayuda-card" style="border-left-color: #198754;">
+        <div class="icono-seccion" style="background:#e8f8ee;">
+            <i class="bi bi-speedometer2" style="color:#198754;"></i>
+        </div>
+        <h5>2. Panel Principal</h5>
+        <p>Al ingresar verás el Dashboard con estadísticas en tiempo real: total de radicados, correos recibidos y enviados, y los últimos documentos registrados.</p>
+        <div class="tip-box">
+            <i class="bi bi-lightbulb"></i> El dashboard se actualiza automáticamente con cada nuevo radicado.
+        </div>
+    </div>
+
+    <div class="ayuda-card" style="border-left-color: #fd7e14;">
+        <div class="icono-seccion" style="background:#fff3e0;">
+            <i class="bi bi-plus-circle" style="color:#fd7e14;"></i>
+        </div>
+        <h5>3. Nuevo Radicado</h5>
+        <p>Haz clic en Nuevo Radicado en el menú lateral. El número se genera automáticamente. Llena los campos y guarda el documento.</p>
+        <div class="tip-box">
+            <i class="bi bi-lightbulb"></i> Puedes adjuntar el documento en PDF al momento de crear el radicado.
+        </div>
+    </div>
+
+    <div class="ayuda-card" style="border-left-color: #6f42c1;">
+        <div class="icono-seccion" style="background:#f0ebff;">
+            <i class="bi bi-search" style="color:#6f42c1;"></i>
+        </div>
+        <h5>4. Buscar Radicados</h5>
+        <p>Usa el buscador en la Lista de Radicados para encontrar documentos por número, remitente o asunto. También puedes usar el lector de código de barras.</p>
+        <div class="tip-box">
+            <i class="bi bi-upc-scan"></i> Conecta el lector USB y escanea directamente en el buscador.
+        </div>
+    </div>
+
+    <div class="ayuda-card" style="border-left-color: #dc3545;">
+        <div class="icono-seccion" style="background:#ffe8ea;">
+            <i class="bi bi-arrow-repeat" style="color:#dc3545;"></i>
+        </div>
+        <h5>5. Cambiar Estado</h5>
+        <p>Abre el detalle de cualquier radicado y usa el panel de Gestión de Estado para actualizar su progreso: Recibido, En proceso o Resuelto.</p>
+        <div class="tip-box">
+            <i class="bi bi-lightbulb"></i> Actualiza el estado cada vez que el documento avance en su proceso.
+        </div>
+    </div>
+
+    <div class="ayuda-card" style="border-left-color: #20c997;">
+        <div class="icono-seccion" style="background:#e0f9f1;">
+            <i class="bi bi-file-earmark-arrow-down" style="color:#20c997;"></i>
+        </div>
+        <h5>6. Exportar Reportes</h5>
+        <p>Desde la Lista de Radicados puedes exportar toda la correspondencia en formato PDF para imprimir o en Excel para análisis.</p>
+        <div class="tip-box">
+            <i class="bi bi-lightbulb"></i> Usa los filtros antes de exportar para obtener reportes específicos.
+        </div>
+    </div>
+</div>
+
+<!-- Cómo registrar un radicado paso a paso -->
+<div class="ayuda-card">
+    <div class="icono-seccion">
+        <i class="bi bi-list-check" style="color:#1a3a5c;"></i>
+    </div>
+    <h5>¿Cómo registrar un radicado paso a paso?</h5>
+    <div class="paso">
+        <div class="paso-numero">1</div>
+        <div class="paso-texto">Haz clic en <strong>Nuevo Radicado</strong> en el menú lateral izquierdo.</div>
+    </div>
+    <div class="paso">
+        <div class="paso-numero">2</div>
+        <div class="paso-texto">Selecciona si es un <strong>Correo Recibido</strong> o <strong>Correo Enviado</strong>.</div>
+    </div>
+    <div class="paso">
+        <div class="paso-numero">3</div>
+        <div class="paso-texto">Completa los campos: <strong>Remitente, Destinatario y Asunto</strong>.</div>
+    </div>
+    <div class="paso">
+        <div class="paso-numero">4</div>
+        <div class="paso-texto">Selecciona el <strong>Tipo de Correspondencia</strong> y el <strong>Estado</strong> inicial.</div>
+    </div>
+    <div class="paso">
+        <div class="paso-numero">5</div>
+        <div class="paso-texto">Opcionalmente adjunta el <strong>documento en PDF</strong>.</div>
+    </div>
+    <div class="paso">
+        <div class="paso-numero">6</div>
+        <div class="paso-texto">Haz clic en <strong>Guardar Radicado</strong>. El sistema asignará el número y generará el código de barras automáticamente.</div>
+    </div>
+    <div class="paso">
+        <div class="paso-numero">7</div>
+        <div class="paso-texto">Imprime el <strong>sticker</strong> desde el detalle del radicado y pégalo en el documento físico.</div>
+    </div>
+</div>
+
+<!-- Roles de usuario -->
+<div class="ayuda-card">
+    <div class="icono-seccion">
+        <i class="bi bi-people-fill" style="color:#1a3a5c;"></i>
+    </div>
+    <h5>Roles de Usuario</h5>
+    <p>El sistema tiene tres tipos de usuarios con diferentes permisos:</p>
+    <div style="margin-top: 15px;">
+        <div class="paso">
+            <div class="paso-numero" style="background:#1a3a5c;">A</div>
+            <div class="paso-texto">
+                <span class="rol-badge rol-admin">Administrador</span>
+                Acceso total: crear, ver, editar, cambiar estados, exportar reportes y gestionar usuarios.
+            </div>
+        </div>
+        <div class="paso">
+            <div class="paso-numero" style="background:#198754;">O</div>
+            <div class="paso-texto">
+                <span class="rol-badge rol-operador">Operador</span>
+                Puede crear radicados, ver detalles y cambiar estados de los documentos.
+            </div>
+        </div>
+        <div class="paso">
+            <div class="paso-numero" style="background:#e65c00;">C</div>
+            <div class="paso-texto">
+                <span class="rol-badge rol-consultor">Consultor</span>
+                Solo puede ver y buscar radicados. No puede crear ni modificar información.
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Contacto -->
+<div class="ayuda-card" style="border-left-color: #1a3a5c; background: linear-gradient(135deg, #f8fafc, #e8f0f8);">
+    <div class="icono-seccion">
+        <i class="bi bi-headset" style="color:#1a3a5c;"></i>
+    </div>
+    <h5>¿Necesitas más ayuda?</h5>
+    <p>Si tienes problemas técnicos o necesitas asistencia adicional, contacta al administrador del sistema o al área de soporte técnico del Centro de Estudios Regionales.</p>
+    <div class="tip-box">
+        <i class="bi bi-info-circle"></i> Sistema de Gestión de Correspondencia v1.0 — Centro de Estudios Regionales, Magdalena Medio.
+    </div>
+</div>
+
+{% endblock %}

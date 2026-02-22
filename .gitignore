@@ -1,0 +1,22 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+
+# Entorno virtual
+venv/
+
+# Base de datos
+db.sqlite3
+
+# Variables de entorno
+.env
+
+# Archivos de media subidos
+media/
+
+# Archivos estáticos compilados
+staticfiles/
+
+# VS Code
+.vscode/

@@ -1,0 +1,86 @@
+{% extends 'radicacion/base.html' %}
+
+{% block title %}Lista de Radicados - CER{% endblock %}
+{% block page_title %}Lista de Radicados{% endblock %}
+{% block page_subtitle %}Gestión de correspondencia recibida y enviada{% endblock %}
+
+{% block content %}
+
+<form method="GET" class="mb-3">
+    <div class="input-group">
+        <input type="text" name="q" id="buscador" class="form-control form-control-lg"
+            placeholder="🔍 Buscar o escanear código de barras..."
+            value="{{ request.GET.q }}" autofocus>
+        <button type="submit" class="btn btn-outline-secondary">Buscar</button>
+    </div>
+    <small class="text-muted">Puedes escribir o escanear directamente con el lector de código de barras</small>
+</form>
+
+<div class="mb-3 d-flex gap-2">
+    <a href="{% url 'lista' %}" class="btn btn-sm btn-outline-secondary">Todos</a>
+    <a href="?direccion=recibido" class="btn btn-sm btn-outline-primary">📥 Recibidos</a>
+    <a href="?direccion=enviado" class="btn btn-sm btn-outline-success">📤 Enviados</a>
+</div>
+
+<div class="d-flex justify-content-end gap-2 mb-3">
+    <a href="{% url 'exportar_pdf' %}" class="btn btn-danger">
+        <i class="bi bi-file-pdf"></i> Exportar PDF
+    </a>
+    <a href="{% url 'exportar_excel' %}" class="btn btn-success">
+        <i class="bi bi-file-excel"></i> Exportar Excel
+    </a>
+</div>
+
+<div class="card">
+    <table class="table table-bordered table-hover mb-0">
+        <thead class="table-dark">
+            <tr>
+                <th>Número</th>
+                <th>Fecha</th>
+                <th>Dirección</th>
+                <th>Remitente</th>
+                <th>Asunto</th>
+                <th>Tipo</th>
+                <th>Estado</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for radicado in radicados %}
+            <tr>
+                <td>{{ radicado.numero }}</td>
+                <td>{{ radicado.fecha }}</td>
+                <td>
+                    {% if radicado.direccion == 'recibido' %}
+                        <span class="badge bg-primary">📥 Recibido</span>
+                    {% else %}
+                        <span class="badge bg-success">📤 Enviado</span>
+                    {% endif %}
+                </td>
+                <td>{{ radicado.remitente }}</td>
+                <td>{{ radicado.asunto }}</td>
+                <td>{{ radicado.tipo }}</td>
+                <td>{{ radicado.estado }}</td>
+                <td>
+                    <a href="{% url 'detalle' radicado.pk %}" class="btn btn-sm btn-info">Ver</a>
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="8" class="text-center text-muted py-3">No hay radicados registrados.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.getElementById('buscador').addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') { e.preventDefault(); this.form.submit(); }
+    });
+    window.onload = function() { document.getElementById('buscador').focus(); }
+</script>
+{% endblock %}

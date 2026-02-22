@@ -1,0 +1,104 @@
+{% extends 'radicacion/base.html' %}
+
+{% block title %}Detalle Radicado - CER{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h2 class="mb-0">🔍 Detalle del Radicado</h2>
+        <p class="text-muted">Información completa del registro {{ radicado.numero }}</p>
+    </div>
+    <div class="d-flex gap-2">
+        <a href="{% url 'imprimir_sticker' radicado.pk %}" target="_blank" class="btn btn-dark shadow-sm">
+            <i class="bi bi-printer-fill"></i> Imprimir Etiqueta
+        </a>
+        <a href="{% url 'lista' %}" class="btn btn-secondary">
+            <i class="bi bi-arrow-left"></i> Volver
+        </a>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card p-4 shadow-sm border-0 mb-4">
+            <h5 class="border-bottom pb-2 mb-3 text-primary">Información General</h5>
+            <table class="table table-borderless">
+                <tr>
+                    <th width="30%" class="text-muted">Número de Radicado:</th>
+                    <td class="fw-bold">{{ radicado.numero }}</td>
+                </tr>
+                <tr>
+                    <th class="text-muted">Fecha de Registro:</th>
+                    <td>{{ radicado.fecha|date:"d F Y" }}</td>
+                </tr>
+                <tr>
+                    <th class="text-muted">Tipo de Movimiento:</th>
+                    <td>
+                        {% if radicado.direccion == 'recibido' %}
+                            <span class="badge bg-primary px-3">📥 Recibido</span>
+                        {% else %}
+                            <span class="badge bg-success px-3">📤 Enviado</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                <tr>
+                    <th class="text-muted">Remitente:</th>
+                    <td>{{ radicado.remitente|upper }}</td>
+                </tr>
+                <tr>
+                    <th class="text-muted">Destinatario:</th>
+                    <td>{{ radicado.destinatario|default:"DEPENDENCIA INTERNA"|upper }}</td>
+                </tr>
+                <tr>
+                    <th class="text-muted">Asunto:</th>
+                    <td class="text-wrap">{{ radicado.asunto }}</td>
+                </tr>
+                <tr>
+                    <th class="text-muted">Categoría:</th>
+                    <td><span class="badge bg-light text-dark border">{{ radicado.tipo }}</span></td>
+                </tr>
+                <tr>
+                    <th class="text-muted">Registrado por:</th>
+                    <td><i class="bi bi-person"></i> {{ radicado.usuario.get_full_name|default:radicado.usuario.username }}</td>
+                </tr>
+            </table>
+
+            {% if radicado.documento %}
+            <div class="mt-3 p-3 bg-light rounded d-flex justify-content-between align-items-center">
+                <span><i class="bi bi-file-pdf text-danger"></i> Documento Adjunto (PDF)</span>
+                <a href="{{ radicado.documento.url }}" target="_blank" class="btn btn-sm btn-outline-primary">Ver Archivo</a>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card p-4 shadow-sm border-0 mb-4 text-center">
+            <h6 class="text-muted mb-3">Identificador Óptico</h6>
+            {% if radicado.codigo_barras %}
+                <img src="{{ radicado.codigo_barras.url }}" alt="Código de barras" class="img-fluid mb-2">
+                <code class="d-block">{{ radicado.numero }}</code>
+            {% else %}
+                <p class="small text-danger">No se generó código de barras</p>
+            {% endif %}
+        </div>
+
+        <div class="card p-4 shadow-sm border-0">
+            <h6 class="mb-3"><i class="bi bi-gear"></i> Gestión de Estado</h6>
+            <form method="POST" action="{% url 'cambiar_estado' radicado.pk %}">
+                {% csrf_token %}
+                <div class="mb-3">
+                    <select name="estado" class="form-select border-primary">
+                        {% for estado in estados %}
+                            <option value="{{ estado.pk }}" {% if estado == radicado.estado %}selected{% endif %}>
+                                {{ estado.nombre }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-primary w-100">Actualizar Estado</button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
