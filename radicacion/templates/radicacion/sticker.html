@@ -1,4 +1,4 @@
-{% load static %}
+{% load static tz %}
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -9,17 +9,21 @@
         body { 
             font-family: 'Arial', sans-serif; 
             margin: 0; 
-            padding: 8px; 
+            padding: 0; 
             width: 100mm; 
             height: 60mm;
+            overflow: hidden;
         }
         .sticker { 
             border: 2px solid #1a3a5c; 
             border-radius: 4px;
-            height: 55mm; 
+            height: 60mm;
+            width: 100mm;
             padding: 8px; 
             display: flex; 
             flex-direction: column; 
+            box-sizing: border-box;
+            overflow: hidden;
         }
         .header { 
             display: flex; 
@@ -33,12 +37,26 @@
         .header-text { text-align: center; flex-grow: 1; }
         .header-text h1 { font-size: 10px; margin: 0; color: #1a3a5c; font-weight: bold; }
         .header-text small { font-size: 7px; color: #2d6a9f; }
-        .numero { font-size: 13px; font-weight: bold; color: #1a3a5c; }
+        .numero { font-size: 11px; font-weight: bold; color: #1a3a5c; text-align: right; }
         .info { font-size: 9px; flex-grow: 1; }
         .info div { margin-bottom: 2px; }
         .label { font-weight: bold; color: #1a3a5c; }
-        .barcode { text-align: center; margin-top: auto; }
-        .barcode img { height: 30px; width: auto; }
+        .barcode { 
+            text-align: center; 
+            margin-top: auto;
+            padding-top: 3px;
+        }
+        .barcode img { 
+            height: 65px;
+            width: 100%;
+            object-fit: fill;
+        }
+        .barcode-numero {
+            font-size: 8px; 
+            font-family: monospace;
+            letter-spacing: 1px;
+            margin-top: 1px;
+        }
     </style>
 </head>
 <body onload="window.print();">
@@ -52,7 +70,11 @@
             <div class="numero">{{ radicado.numero }}</div>
         </div>
         <div class="info">
-            <div><span class="label">FECHA:</span> {{ radicado.fecha|date:"d/m/Y" }} {{ radicado.fecha|time:"h:i A" }}</div>
+            <div>
+                <span class="label">FECHA:</span> 
+                {{ radicado.fecha|localtime|date:"d/m/Y" }} 
+                {{ radicado.fecha|localtime|time:"g:i A" }}
+            </div>
             <div><span class="label">REMITENTE:</span> {{ radicado.remitente|upper }}</div>
             <div><span class="label">DESTINO:</span> {{ radicado.destinatario|upper|default:"---" }}</div>
             <div><span class="label">ASUNTO:</span> {{ radicado.asunto|truncatechars:50 }}</div>
@@ -60,7 +82,7 @@
         <div class="barcode">
             {% if radicado.codigo_barras %}
                 <img src="{{ radicado.codigo_barras.url }}" alt="barcode">
-                <div style="font-size: 7px; font-family: monospace;">{{ radicado.numero }}</div>
+                <div class="barcode-numero">{{ radicado.numero }}</div>
             {% endif %}
         </div>
     </div>

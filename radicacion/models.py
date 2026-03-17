@@ -31,7 +31,7 @@ class Radicado(models.Model):
     ]
 
     numero = models.CharField(max_length=50, unique=True, blank=True)
-    fecha = models.DateField(auto_now_add=True)
+    fecha = models.DateTimeField(auto_now_add=True)
     remitente = models.CharField(max_length=150)
     destinatario = models.CharField(max_length=150, blank=True, null=True)
     asunto = models.TextField()
