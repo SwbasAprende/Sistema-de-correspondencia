@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse
 from django.db import models
-from .models import Radicado, EstadoRadicado, TipoCorrespondencia
+from .models import Radicado, EstadoRadicado, TipoCorrespondencia, Empresa, HistorialEstado
 from reportlab.lib.pagesizes import letter, landscape
 from reportlab.lib import colors
 from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, Spacer
@@ -39,51 +39,75 @@ def crear_radicado(request):
         return redirect('lista')
 
     if request.method == 'POST':
-        from datetime import date
-        año = date.today().year
-        ultimo = Radicado.objects.order_by('-id').first()
-        siguiente = (ultimo.id + 1) if ultimo else 1
-        numero = f"RAD-{siguiente:04d}-{año}"
-
         remitente = request.POST.get('remitente')
         destinatario = request.POST.get('destinatario')
         asunto = request.POST.get('asunto')
         direccion = request.POST.get('direccion')
         tipo_id = request.POST.get('tipo')
         estado_id = request.POST.get('estado')
+        empresa_id = request.POST.get('empresa')
         documento = request.FILES.get('documento')
 
         radicado = Radicado(
-            numero=numero,
             remitente=remitente,
             destinatario=destinatario,
             asunto=asunto,
             direccion=direccion,
             tipo_id=tipo_id,
             estado_id=estado_id,
+            empresa_id=empresa_id if empresa_id else None,
             documento=documento,
-            usuario=request.user
+            usuario=request.user,
         )
         radicado.save()
+
+        HistorialEstado.objects.create(
+            radicado=radicado,
+            estado_anterior=None,
+            estado_nuevo=radicado.estado,
+            usuario=request.user,
+            observacion='Radicado creado'
+        )
         return redirect('detalle', pk=radicado.pk)
 
     tipos = TipoCorrespondencia.objects.all()
     estados = EstadoRadicado.objects.all()
-    return render(request, 'radicacion/crear.html', {'tipos': tipos, 'estados': estados})
+    empresas = Empresa.objects.all()
+    return render(request, 'radicacion/crear.html', {
+        'tipos': tipos,
+        'estados': estados,
+        'empresas': empresas
+    })
 
 @login_required
 def detalle_radicado(request, pk):
     radicado = get_object_or_404(Radicado, pk=pk)
     estados = EstadoRadicado.objects.all()
-    return render(request, 'radicacion/detalle.html', {'radicado': radicado, 'estados': estados})
+    historial = radicado.historial.select_related('estado_anterior', 'estado_nuevo', 'usuario').all()
+    return render(request, 'radicacion/detalle.html', {
+        'radicado': radicado,
+        'estados': estados,
+        'historial': historial
+        })
 
 @login_required
 def cambiar_estado(request, pk):
     radicado = get_object_or_404(Radicado, pk=pk)
     if request.method == 'POST':
+        estado_anterior = radicado.estado
         estado_id = request.POST.get('estado')
+        observacion =request.POST.get('observacion', '').strip()
         radicado.estado_id = estado_id
         radicado.save()
+        # Solo registrar si el estado realmente cambió
+        if str(estado_anterior.pk) != str(estado_id):
+            HistorialEstado.objects.create(
+                radicado=radicado,
+                estado_anterior=estado_anterior,
+                estado_nuevo=radicado.estado,
+                usuario=request.user,
+                observacion=observacion or None
+            )
         return redirect('detalle', pk=pk)
     return redirect('detalle', pk=pk)
 
@@ -109,14 +133,6 @@ def dashboard(request):
 def imprimir_sticker(request, pk):
     radicado = get_object_or_404(Radicado, pk=pk)
     return render(request, 'radicacion/sticker.html', {'radicado': radicado})
-
-    from django.http import HttpResponse
-from reportlab.lib.pagesizes import letter, landscape
-from reportlab.lib import colors
-from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, Spacer
-from reportlab.lib.styles import getSampleStyleSheet
-import openpyxl
-from openpyxl.styles import Font, PatternFill, Alignment
 
 @login_required
 def exportar_pdf(request):

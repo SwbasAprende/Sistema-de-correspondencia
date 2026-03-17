@@ -7,59 +7,282 @@
 {% block page_subtitle %}Registrar correspondencia recibida o enviada{% endblock %}
 
 {% block content %}
+<style>
+    .form-card {
+        background: white;
+        border-radius: 16px;
+        box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+        overflow: hidden;
+    }
+    .form-card-header {
+        background: linear-gradient(135deg, #1a3a5c 0%, #2d6a9f 100%);
+        padding: 24px 30px;
+        color: white;
+    }
+    .form-card-header h5 {
+        margin: 0;
+        font-weight: 700;
+        font-size: 1.1rem;
+    }
+    .form-card-header p {
+        margin: 5px 0 0;
+        opacity: 0.8;
+        font-size: 0.85rem;
+    }
+    .form-card-body {
+        padding: 30px;
+    }
+    .form-label {
+        font-weight: 600;
+        color: #1a3a5c;
+        font-size: 0.88rem;
+        margin-bottom: 6px;
+    }
+    .form-control, .form-select {
+        border: 1.5px solid #dce6f0;
+        border-radius: 10px;
+        padding: 10px 14px;
+        font-size: 0.9rem;
+        transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    .form-control:focus, .form-select:focus {
+        border-color: #2d6a9f;
+        box-shadow: 0 0 0 3px rgba(45,106,159,0.12);
+    }
+    .form-control:disabled {
+        background: #f0f4f8;
+        color: #5a7a9a;
+        font-weight: 600;
+    }
+    .numero-preview {
+        background: #e8f0f8;
+        border: 2px dashed #2d6a9f;
+        border-radius: 10px;
+        padding: 12px 16px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+    .numero-preview .badge-empresa {
+        background: #1a3a5c;
+        color: white;
+        padding: 4px 10px;
+        border-radius: 6px;
+        font-size: 0.82rem;
+        font-weight: 700;
+        letter-spacing: 1px;
+    }
+    .numero-preview .badge-tipo {
+        background: #2d6a9f;
+        color: white;
+        padding: 4px 10px;
+        border-radius: 6px;
+        font-size: 0.82rem;
+        font-weight: 700;
+        letter-spacing: 1px;
+    }
+    .numero-preview .badge-fecha {
+        background: #a8c4e0;
+        color: #1a3a5c;
+        padding: 4px 10px;
+        border-radius: 6px;
+        font-size: 0.82rem;
+        font-weight: 700;
+    }
+    .numero-preview .badge-consec {
+        background: #e0ecf8;
+        color: #1a3a5c;
+        padding: 4px 10px;
+        border-radius: 6px;
+        font-size: 0.82rem;
+        font-weight: 700;
+    }
+    .numero-preview .sep {
+        color: #5a7a9a;
+        font-weight: 700;
+        font-size: 1rem;
+    }
+    .preview-hint {
+        font-size: 0.78rem;
+        color: #8a9bb0;
+        margin-top: 6px;
+    }
+    .section-divider {
+        border: none;
+        border-top: 1.5px solid #e8f0f8;
+        margin: 24px 0;
+    }
+    .section-title {
+        font-size: 0.72rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        color: #8a9bb0;
+        margin-bottom: 16px;
+    }
+    .btn-guardar {
+        background: linear-gradient(135deg, #1a3a5c, #2d6a9f);
+        color: white;
+        border: none;
+        border-radius: 12px;
+        padding: 13px 30px;
+        font-weight: 700;
+        font-size: 0.95rem;
+        width: 100%;
+        transition: transform 0.15s, box-shadow 0.15s;
+    }
+    .btn-guardar:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(26,58,92,0.3);
+        color: white;
+    }
+    .btn-volver {
+        color: #5a7a9a;
+        text-decoration: none;
+        font-size: 0.88rem;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 8px 14px;
+        border-radius: 10px;
+        border: 1.5px solid #dce6f0;
+        transition: all 0.2s;
+        background: white;
+    }
+    .btn-volver:hover {
+        background: #f0f4f8;
+        color: #1a3a5c;
+    }
+    .tipo-option-badge {
+        display: inline-block;
+        background: #e8f0f8;
+        color: #1a3a5c;
+        padding: 2px 8px;
+        border-radius: 5px;
+        font-size: 0.75rem;
+        font-weight: 700;
+        margin-left: 6px;
+    }
+</style>
+
 <div class="d-flex justify-content-between align-items-center mb-3">
-    <h4>📝 Nuevo Radicado</h4>
-    <a href="{% url 'lista' %}" class="btn btn-secondary">← Volver</a>
+    <a href="{% url 'lista' %}" class="btn-volver">
+        <i class="bi bi-arrow-left"></i> Volver a la lista
+    </a>
 </div>
 
-<div class="card p-4 bg-white">
-    <form method="POST" enctype="multipart/form-data">
-        {% csrf_token %}
-        <div class="mb-3">
-            <label class="form-label">Tipo de correo</label>
-            <select name="direccion" class="form-select" required>
-                <option value="recibido">📥 Correo Recibido</option>
-                <option value="enviado">📤 Correo Enviado</option>
-            </select>
-        </div>
-        <div class="mb-3">
-            <label class="form-label">Número de Radicado</label>
-            <input type="text" class="form-control" placeholder="Se generará automáticamente" disabled>
-            <small class="text-muted">El sistema asignará el número al guardar.</small>
-        </div>
-        <div class="mb-3">
-            <label class="form-label">Remitente</label>
-            <input type="text" name="remitente" class="form-control" required>
-        </div>
-        <div class="mb-3">
-            <label class="form-label">Destinatario</label>
-            <input type="text" name="destinatario" class="form-control">
-        </div>
-        <div class="mb-3">
-            <label class="form-label">Asunto</label>
-            <textarea name="asunto" class="form-control" rows="3" required></textarea>
-        </div>
-        <div class="mb-3">
-            <label class="form-label">Tipo de Correspondencia</label>
-            <select name="tipo" class="form-select" required>
-                {% for tipo in tipos %}
-                    <option value="{{ tipo.pk }}">{{ tipo.nombre }}</option>
-                {% endfor %}
-            </select>
-        </div>
-        <div class="mb-3">
-            <label class="form-label">Estado</label>
-            <select name="estado" class="form-select" required>
-                {% for estado in estados %}
-                    <option value="{{ estado.pk }}">{{ estado.nombre }}</option>
-                {% endfor %}
-            </select>
-        </div>
-        <div class="mb-3">
-            <label class="form-label">Adjuntar documento (PDF)</label>
-            <input type="file" name="documento" class="form-control" accept=".pdf">
-        </div>
-        <button type="submit" class="btn btn-success w-100">Guardar Radicado</button>
-    </form>
+<div class="form-card">
+    <div class="form-card-header">
+        <h5><i class="bi bi-plus-circle-fill me-2"></i>Registrar nuevo radicado</h5>
+        <p>El número de radicado se generará automáticamente al guardar.</p>
+    </div>
+    <div class="form-card-body">
+        <form method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+
+            <!-- Vista previa del número -->
+            <div class="mb-4">
+                <div class="form-label">Vista previa del número de radicado</div>
+                <div class="numero-preview">
+                    <span class="badge-empresa">CER</span>
+                    <span class="sep">—</span>
+                    <span class="badge-tipo" id="preview-tipo">DOC</span>
+                    <span class="sep">—</span>
+                    <span class="badge-fecha" id="preview-fecha">{% now "Ymd" %}</span>
+                    <span class="sep">—</span>
+                    <span class="badge-consec">####</span>
+                </div>
+                <div class="preview-hint">
+                    <i class="bi bi-info-circle me-1"></i>
+                    El consecutivo final lo asigna el sistema al guardar. El código del tipo cambia según tu selección.
+                </div>
+            </div>
+
+            <hr class="section-divider">
+            <div class="section-title"><i class="bi bi-envelope me-1"></i> Información del documento</div>
+
+            <div class="row g-3 mb-3">
+                <div class="col-md-6">
+                    <label class="form-label">Tipo de correo</label>
+                    <select name="direccion" class="form-select" required>
+                        <option value="recibido">📥 Correo Recibido</option>
+                        <option value="enviado">📤 Correo Enviado</option>
+                    </select>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label">Tipo de Correspondencia</label>
+                    <select name="tipo" id="select-tipo" class="form-select" required>
+                        {% for tipo in tipos %}
+                            <option value="{{ tipo.pk }}" data-codigo="{{ tipo.codigo }}">
+                                {{ tipo.nombre }} — {{ tipo.codigo }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Remitente</label>
+                <input type="text" name="remitente" class="form-control"
+                    placeholder="Nombre o entidad que envía" required>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Destinatario <span class="text-muted fw-normal">(opcional)</span></label>
+                <input type="text" name="destinatario" class="form-control"
+                    placeholder="Nombre o entidad que recibe">
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Asunto</label>
+                <textarea name="asunto" class="form-control" rows="3"
+                        placeholder="Descripción breve del contenido del documento" required></textarea>
+            </div>
+
+            <hr class="section-divider">
+            <div class="section-title"><i class="bi bi-gear me-1"></i> Configuración</div>
+
+            <div class="row g-3 mb-3">
+                <div class="col-md-6">
+                    <label class="form-label">Estado inicial</label>
+                    <select name="estado" class="form-select" required>
+                        {% for estado in estados %}
+                            <option value="{{ estado.pk }}">{{ estado.nombre }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label">Adjuntar documento <span class="text-muted fw-normal">(PDF)</span></label>
+                    <input type="file" name="documento" class="form-control" accept=".pdf">
+                </div>
+            </div>
+
+            {% if empresas %}
+                <input type="hidden" name="empresa" value="{{ empresas.0.pk }}">
+            {% endif %}
+
+            <hr class="section-divider">
+            <button type="submit" class="btn-guardar">
+                <i class="bi bi-check-circle-fill me-2"></i>Guardar Radicado
+            </button>
+        </form>
+    </div>
 </div>
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+    // Actualiza el badge del tipo en la vista previa al cambiar el select
+    const selectTipo = document.getElementById('select-tipo');
+    const previewTipo = document.getElementById('preview-tipo');
+
+    function actualizarPreview() {
+        const opcion = selectTipo.options[selectTipo.selectedIndex];
+        const codigo = opcion.getAttribute('data-codigo') || 'DOC';
+        previewTipo.textContent = codigo;
+    }
+
+    selectTipo.addEventListener('change', actualizarPreview);
+    // Ejecutar al cargar para mostrar el código del tipo por defecto
+    actualizarPreview();
+</script>
 {% endblock %}

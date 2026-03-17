@@ -52,7 +52,7 @@
             <div class="numero">{{ radicado.numero }}</div>
         </div>
         <div class="info">
-            <div><span class="label">FECHA:</span> {{ radicado.fecha|date:"d/m/Y" }}</div>
+            <div><span class="label">FECHA:</span> {{ radicado.fecha|date:"d/m/Y" }} {{ radicado.fecha|time:"h:i A" }}</div>
             <div><span class="label">REMITENTE:</span> {{ radicado.remitente|upper }}</div>
             <div><span class="label">DESTINO:</span> {{ radicado.destinatario|upper|default:"---" }}</div>
             <div><span class="label">ASUNTO:</span> {{ radicado.asunto|truncatechars:50 }}</div>

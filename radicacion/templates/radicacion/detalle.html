@@ -1,104 +1,411 @@
 {% extends 'radicacion/base.html' %}
 
 {% block title %}Detalle Radicado - CER{% endblock %}
+{% block page_title %}Detalle del Radicado{% endblock %}
+{% block page_subtitle %}Información completa del registro {{ radicado.numero }}{% endblock %}
 
 {% block content %}
+<style>
+    .info-card {
+        background: white;
+        border-radius: 16px;
+        box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+        padding: 28px;
+        margin-bottom: 20px;
+    }
+    .info-card .card-section-title {
+        font-size: 0.72rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        color: #8a9bb0;
+        margin-bottom: 18px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+    .info-card .card-section-title::after {
+        content: '';
+        flex: 1;
+        height: 1px;
+        background: #e8f0f8;
+    }
+    .info-row {
+        display: flex;
+        padding: 10px 0;
+        border-bottom: 1px solid #f0f4f8;
+        font-size: 0.88rem;
+        gap: 12px;
+    }
+    .info-row:last-child { border-bottom: none; }
+    .info-label {
+        color: #8a9bb0;
+        font-weight: 600;
+        min-width: 170px;
+        flex-shrink: 0;
+    }
+    .info-value { color: #1a3a5c; }
+    .badge-direccion {
+        padding: 4px 14px;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        font-weight: 600;
+    }
+    .badge-recibido { background: #e8f0f8; color: #1a3a5c; }
+    .badge-enviado  { background: #e8f8ee; color: #198754; }
+    .badge-tipo {
+        background: #f0f4f8;
+        color: #1a3a5c;
+        border: 1px solid #dce6f0;
+        padding: 3px 10px;
+        border-radius: 6px;
+        font-size: 0.8rem;
+        font-weight: 600;
+    }
+    /* Historial */
+    .historial-timeline {
+        position: relative;
+        padding-left: 28px;
+    }
+    .historial-timeline::before {
+        content: '';
+        position: absolute;
+        left: 9px;
+        top: 8px;
+        bottom: 8px;
+        width: 2px;
+        background: #e8f0f8;
+    }
+    .historial-item {
+        position: relative;
+        margin-bottom: 18px;
+    }
+    .historial-item:last-child { margin-bottom: 0; }
+    .historial-dot {
+        position: absolute;
+        left: -24px;
+        top: 6px;
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        background: #2d6a9f;
+        border: 2px solid white;
+        box-shadow: 0 0 0 2px #2d6a9f;
+    }
+    .historial-dot.first { background: #198754; box-shadow: 0 0 0 2px #198754; }
+    .historial-box {
+        background: #f8fafc;
+        border: 1px solid #e8f0f8;
+        border-radius: 10px;
+        padding: 12px 16px;
+        font-size: 0.85rem;
+    }
+    .historial-box .h-fecha {
+        font-size: 0.75rem;
+        color: #8a9bb0;
+        margin-bottom: 4px;
+    }
+    .historial-box .h-cambio {
+        color: #1a3a5c;
+        font-weight: 600;
+        margin-bottom: 4px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        flex-wrap: wrap;
+    }
+    .historial-box .h-usuario {
+        font-size: 0.78rem;
+        color: #5a7a9a;
+    }
+    .historial-box .h-obs {
+        margin-top: 6px;
+        font-size: 0.8rem;
+        color: #5a7a9a;
+        background: white;
+        border-left: 3px solid #a8c4e0;
+        padding: 4px 10px;
+        border-radius: 0 6px 6px 0;
+    }
+    .estado-pill {
+        display: inline-block;
+        padding: 2px 10px;
+        border-radius: 12px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        background: #e8f0f8;
+        color: #1a3a5c;
+    }
+    .arrow-icon { color: #a8c4e0; font-size: 0.8rem; }
+    /* Panel de estado */
+    .estado-panel {
+        background: white;
+        border-radius: 16px;
+        box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+        padding: 24px;
+        margin-bottom: 20px;
+    }
+    .form-select {
+        border: 1.5px solid #dce6f0;
+        border-radius: 10px;
+        padding: 9px 14px;
+        font-size: 0.88rem;
+    }
+    .form-select:focus {
+        border-color: #2d6a9f;
+        box-shadow: 0 0 0 3px rgba(45,106,159,0.12);
+    }
+    .form-control {
+        border: 1.5px solid #dce6f0;
+        border-radius: 10px;
+        padding: 9px 14px;
+        font-size: 0.85rem;
+    }
+    .form-control:focus {
+        border-color: #2d6a9f;
+        box-shadow: 0 0 0 3px rgba(45,106,159,0.12);
+    }
+    .btn-actualizar {
+        background: linear-gradient(135deg, #1a3a5c, #2d6a9f);
+        color: white;
+        border: none;
+        border-radius: 10px;
+        padding: 10px;
+        font-weight: 600;
+        font-size: 0.88rem;
+        width: 100%;
+        transition: transform 0.15s, box-shadow 0.15s;
+    }
+    .btn-actualizar:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 16px rgba(26,58,92,0.25);
+        color: white;
+    }
+    /* Código de barras */
+    .barcode-card {
+        background: white;
+        border-radius: 16px;
+        box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+        padding: 24px;
+        text-align: center;
+        margin-bottom: 20px;
+    }
+    /* Botones superiores */
+    .btn-imprimir {
+        background: #1a3a5c;
+        color: white;
+        border: none;
+        border-radius: 10px;
+        padding: 9px 18px;
+        font-size: 0.85rem;
+        font-weight: 600;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        transition: background 0.2s;
+    }
+    .btn-imprimir:hover { background: #2d6a9f; color: white; }
+    .btn-volver {
+        color: #5a7a9a;
+        text-decoration: none;
+        font-size: 0.85rem;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 9px 14px;
+        border-radius: 10px;
+        border: 1.5px solid #dce6f0;
+        background: white;
+        transition: all 0.2s;
+    }
+    .btn-volver:hover { background: #f0f4f8; color: #1a3a5c; }
+</style>
+
+<!-- Botones superiores -->
 <div class="d-flex justify-content-between align-items-center mb-4">
-    <div>
-        <h2 class="mb-0">🔍 Detalle del Radicado</h2>
-        <p class="text-muted">Información completa del registro {{ radicado.numero }}</p>
-    </div>
-    <div class="d-flex gap-2">
-        <a href="{% url 'imprimir_sticker' radicado.pk %}" target="_blank" class="btn btn-dark shadow-sm">
-            <i class="bi bi-printer-fill"></i> Imprimir Etiqueta
-        </a>
-        <a href="{% url 'lista' %}" class="btn btn-secondary">
-            <i class="bi bi-arrow-left"></i> Volver
-        </a>
-    </div>
+    <a href="{% url 'lista' %}" class="btn-volver">
+        <i class="bi bi-arrow-left"></i> Volver a la lista
+    </a>
+    <a href="{% url 'imprimir_sticker' radicado.pk %}" target="_blank" class="btn-imprimir">
+        <i class="bi bi-printer-fill"></i> Imprimir Etiqueta
+    </a>
 </div>
 
-<div class="row">
-    <div class="col-md-8">
-        <div class="card p-4 shadow-sm border-0 mb-4">
-            <h5 class="border-bottom pb-2 mb-3 text-primary">Información General</h5>
-            <table class="table table-borderless">
-                <tr>
-                    <th width="30%" class="text-muted">Número de Radicado:</th>
-                    <td class="fw-bold">{{ radicado.numero }}</td>
-                </tr>
-                <tr>
-                    <th class="text-muted">Fecha de Registro:</th>
-                    <td>{{ radicado.fecha|date:"d F Y" }}</td>
-                </tr>
-                <tr>
-                    <th class="text-muted">Tipo de Movimiento:</th>
-                    <td>
-                        {% if radicado.direccion == 'recibido' %}
-                            <span class="badge bg-primary px-3">📥 Recibido</span>
-                        {% else %}
-                            <span class="badge bg-success px-3">📤 Enviado</span>
-                        {% endif %}
-                    </td>
-                </tr>
-                <tr>
-                    <th class="text-muted">Remitente:</th>
-                    <td>{{ radicado.remitente|upper }}</td>
-                </tr>
-                <tr>
-                    <th class="text-muted">Destinatario:</th>
-                    <td>{{ radicado.destinatario|default:"DEPENDENCIA INTERNA"|upper }}</td>
-                </tr>
-                <tr>
-                    <th class="text-muted">Asunto:</th>
-                    <td class="text-wrap">{{ radicado.asunto }}</td>
-                </tr>
-                <tr>
-                    <th class="text-muted">Categoría:</th>
-                    <td><span class="badge bg-light text-dark border">{{ radicado.tipo }}</span></td>
-                </tr>
-                <tr>
-                    <th class="text-muted">Registrado por:</th>
-                    <td><i class="bi bi-person"></i> {{ radicado.usuario.get_full_name|default:radicado.usuario.username }}</td>
-                </tr>
-            </table>
+<div class="row g-4">
+
+    <!-- ── COLUMNA IZQUIERDA: Info + Historial ── -->
+    <div class="col-lg-8">
+
+        <!-- Información general -->
+        <div class="info-card">
+            <div class="card-section-title">
+                <i class="bi bi-file-text" style="color:#2d6a9f;"></i> Información del documento
+            </div>
+            <div class="info-row">
+                <span class="info-label">Número de Radicado</span>
+                <span class="info-value fw-bold" style="font-family: monospace; font-size:1rem; color:#1a3a5c;">
+                    {{ radicado.numero }}
+                </span>
+            </div>
+            <div class="info-row">
+                <span class="info-label">Fecha de Registro</span>
+                <span class="info-value">{{ radicado.fecha|date:"d \d\e F \d\e Y" }}</span>
+            </div>
+            <div class="info-row">
+                <span class="info-label">Tipo de Movimiento</span>
+                <span class="info-value">
+                    {% if radicado.direccion == 'recibido' %}
+                        <span class="badge-direccion badge-recibido">📥 Recibido</span>
+                    {% else %}
+                        <span class="badge-direccion badge-enviado">📤 Enviado</span>
+                    {% endif %}
+                </span>
+            </div>
+            <div class="info-row">
+                <span class="info-label">Tipo de Correspondencia</span>
+                <span class="info-value"><span class="badge-tipo">{{ radicado.tipo }}</span></span>
+            </div>
+            <div class="info-row">
+                <span class="info-label">Remitente</span>
+                <span class="info-value">{{ radicado.remitente|upper }}</span>
+            </div>
+            <div class="info-row">
+                <span class="info-label">Destinatario</span>
+                <span class="info-value">{{ radicado.destinatario|default:"Dependencia Interna"|upper }}</span>
+            </div>
+            <div class="info-row">
+                <span class="info-label">Asunto</span>
+                <span class="info-value">{{ radicado.asunto }}</span>
+            </div>
+            <div class="info-row">
+                <span class="info-label">Estado Actual</span>
+                <span class="info-value">
+                    <span class="estado-pill">{{ radicado.estado }}</span>
+                </span>
+            </div>
+            <div class="info-row">
+                <span class="info-label">Registrado por</span>
+                <span class="info-value">
+                    <i class="bi bi-person-circle me-1" style="color:#2d6a9f;"></i>
+                    {{ radicado.usuario.get_full_name|default:radicado.usuario.username }}
+                </span>
+            </div>
 
             {% if radicado.documento %}
-            <div class="mt-3 p-3 bg-light rounded d-flex justify-content-between align-items-center">
-                <span><i class="bi bi-file-pdf text-danger"></i> Documento Adjunto (PDF)</span>
-                <a href="{{ radicado.documento.url }}" target="_blank" class="btn btn-sm btn-outline-primary">Ver Archivo</a>
+            <div class="mt-4 p-3 rounded-3 d-flex justify-content-between align-items-center"
+                    style="background:#f0f4f8; border: 1px solid #dce6f0;">
+                <span style="font-size:0.88rem; color:#1a3a5c;">
+                    <i class="bi bi-file-pdf-fill text-danger me-2"></i> Documento adjunto (PDF)
+                </span>
+                <a href="{{ radicado.documento.url }}" target="_blank"
+                    class="btn btn-sm btn-outline-primary rounded-3">
+                    <i class="bi bi-eye me-1"></i> Ver archivo
+                </a>
             </div>
             {% endif %}
         </div>
-    </div>
 
-    <div class="col-md-4">
-        <div class="card p-4 shadow-sm border-0 mb-4 text-center">
-            <h6 class="text-muted mb-3">Identificador Óptico</h6>
-            {% if radicado.codigo_barras %}
-                <img src="{{ radicado.codigo_barras.url }}" alt="Código de barras" class="img-fluid mb-2">
-                <code class="d-block">{{ radicado.numero }}</code>
+        <!-- Historial de estados -->
+        <div class="info-card">
+            <div class="card-section-title">
+                <i class="bi bi-clock-history" style="color:#2d6a9f;"></i> Historial de estados
+            </div>
+
+            {% if historial %}
+            <div class="historial-timeline">
+                {% for h in historial %}
+                <div class="historial-item">
+                    <div class="historial-dot {% if forloop.last %}first{% endif %}"></div>
+                    <div class="historial-box">
+                        <div class="h-fecha">
+                            <i class="bi bi-calendar3 me-1"></i>
+                            {{ h.fecha|date:"d/m/Y" }} a las {{ h.fecha|date:"H:i" }}
+                        </div>
+                        <div class="h-cambio">
+                            {% if h.estado_anterior %}
+                                <span class="estado-pill" style="background:#fff3e0; color:#e65c00;">
+                                    {{ h.estado_anterior }}
+                                </span>
+                                <i class="bi bi-arrow-right arrow-icon"></i>
+                            {% else %}
+                                <i class="bi bi-plus-circle me-1" style="color:#198754;"></i>
+                                <span style="color:#198754; font-size:0.8rem;">Radicado creado —</span>
+                            {% endif %}
+                            <span class="estado-pill">{{ h.estado_nuevo }}</span>
+                        </div>
+                        <div class="h-usuario">
+                            <i class="bi bi-person me-1"></i>
+                            {{ h.usuario.get_full_name|default:h.usuario.username }}
+                        </div>
+                        {% if h.observacion %}
+                        <div class="h-obs">
+                            <i class="bi bi-chat-left-text me-1"></i> {{ h.observacion }}
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
             {% else %}
-                <p class="small text-danger">No se generó código de barras</p>
+            <div style="text-align:center; color:#8a9bb0; padding: 20px 0; font-size:0.88rem;">
+                <i class="bi bi-clock" style="font-size:1.5rem; display:block; margin-bottom:8px;"></i>
+                Aún no hay cambios de estado registrados.
+            </div>
             {% endif %}
         </div>
 
-        <div class="card p-4 shadow-sm border-0">
-            <h6 class="mb-3"><i class="bi bi-gear"></i> Gestión de Estado</h6>
+    </div>
+
+    <!-- ── COLUMNA DERECHA: Código de barras + Cambiar estado ── -->
+    <div class="col-lg-4">
+
+        <!-- Código de barras -->
+        <div class="barcode-card">
+            <div class="card-section-title" style="justify-content:center;">
+                <i class="bi bi-upc-scan" style="color:#2d6a9f;"></i> Identificador Óptico
+            </div>
+            {% if radicado.codigo_barras %}
+                <img src="{{ radicado.codigo_barras.url }}" alt="Código de barras" class="img-fluid mb-2">
+                <code style="font-size:0.78rem; color:#1a3a5c;">{{ radicado.numero }}</code>
+            {% else %}
+                <p class="small text-danger">No se generó código de barras.</p>
+            {% endif %}
+        </div>
+
+        <!-- Cambiar estado -->
+        <div class="estado-panel">
+            <div class="card-section-title">
+                <i class="bi bi-gear" style="color:#2d6a9f;"></i> Gestión de Estado
+            </div>
             <form method="POST" action="{% url 'cambiar_estado' radicado.pk %}">
                 {% csrf_token %}
                 <div class="mb-3">
-                    <select name="estado" class="form-select border-primary">
+                    <label class="form-label" style="font-size:0.82rem; font-weight:600; color:#1a3a5c;">
+                        Nuevo estado
+                    </label>
+                    <select name="estado" class="form-select">
                         {% for estado in estados %}
-                            <option value="{{ estado.pk }}" {% if estado == radicado.estado %}selected{% endif %}>
+                            <option value="{{ estado.pk }}"
+                                {% if estado == radicado.estado %}selected{% endif %}>
                                 {{ estado.nombre }}
                             </option>
                         {% endfor %}
                     </select>
                 </div>
-                <button type="submit" class="btn btn-primary w-100">Actualizar Estado</button>
+                <div class="mb-3">
+                    <label class="form-label" style="font-size:0.82rem; font-weight:600; color:#1a3a5c;">
+                        Observación <span style="font-weight:400; color:#8a9bb0;">(opcional)</span>
+                    </label>
+                    <textarea name="observacion" class="form-control" rows="2"
+                            placeholder="Ej: Aprobado por dirección, enviado a archivo..."></textarea>
+                </div>
+                <button type="submit" class="btn-actualizar">
+                    <i class="bi bi-check-circle me-2"></i>Actualizar Estado
+                </button>
             </form>
         </div>
+
     </div>
 </div>
 {% endblock %}
