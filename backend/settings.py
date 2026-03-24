@@ -91,7 +91,7 @@ USE_TZ = True
 STATIC_URL = 'static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 STATICFILES_DIRS = [BASE_DIR / 'radicacion' / 'static']
-STATICFILES_STORAGE = ('whitenoise.storage.CompressedManifestStaticFileshaus')
+STATICFILES_STORAGE = ('whitenoise.storage.CompressedManifestStaticFilesStorage')
 
 # ── Archivos media (PDFs, códigos de barras) ────────────────
 MEDIA_URL = '/media/'
