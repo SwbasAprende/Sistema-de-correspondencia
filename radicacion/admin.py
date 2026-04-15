@@ -1,6 +1,6 @@
 from django.contrib import admin
-from .models import Radicado, EstadoRadicado, TipoCorrespondencia, Perfil
-from .models import Empresa
+
+from .models import Empresa, EstadoRadicado, Perfil, Radicado, TipoCorrespondencia
 
 admin.site.register(Empresa)
 admin.site.register(Radicado)

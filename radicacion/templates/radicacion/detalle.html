@@ -366,7 +366,7 @@
                 <i class="bi bi-upc-scan" style="color:#2d6a9f;"></i> Identificador Óptico
             </div>
             {% if radicado.codigo_barras %}
-                <img src="{{ radicado.codigo_barras.url }}" alt="Código de barras" class="img-fluid mb-2">
+                <img src="{% url 'barcode_image' radicado.pk %}" alt="Código de barras" class="img-fluid mb-2">
                 <code style="font-size:0.78rem; color:#1a3a5c;">{{ radicado.numero }}</code>
             {% else %}
                 <p class="small text-danger">No se generó código de barras.</p>

@@ -58,11 +58,26 @@
             margin-top: 1px;
         }
     </style>
+    <script>
+        function printWhenReady() {
+            const img = document.querySelector('.barcode img');
+            if (!img) {
+                window.print();
+                return;
+            }
+            if (img.complete && img.naturalWidth > 0) {
+                window.print();
+                return;
+            }
+            img.addEventListener('load', function() { window.print(); }, { once: true });
+            img.addEventListener('error', function() { window.print(); }, { once: true });
+        }
+    </script>
 </head>
-<body onload="window.print();">
+<body onload="printWhenReady();">
     <div class="sticker">
         <div class="header">
-            <img src="{% static 'radicacion/logo_cer.jpg' %}" alt="Logo CER">
+            <img src="{% static 'radicacion/logo_actualizado_cer.jpeg' %}" alt="Logo CER">
             <div class="header-text">
                 <h1>Centro de Estudios Regionales</h1>
                 <small>Sistema de Gestión de Correspondencia</small>
@@ -81,7 +96,7 @@
         </div>
         <div class="barcode">
             {% if radicado.codigo_barras %}
-                <img src="{{ radicado.codigo_barras.url }}" alt="barcode">
+                <img src="{% url 'barcode_image' radicado.pk %}" alt="barcode">
                 <div class="barcode-numero">{{ radicado.numero }}</div>
             {% endif %}
         </div>
